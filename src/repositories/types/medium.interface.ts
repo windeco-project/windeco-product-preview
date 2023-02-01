@@ -1,4 +1,4 @@
-import { MediumCategory } from "../enums"
+import { MediumCategory } from '../enums'
 
 export interface MediumInterface {
   id: string

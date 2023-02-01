@@ -10,7 +10,16 @@ import { getConfiguration } from '../configuration'
 import { ModelMaterialConverter } from '../tools'
 import { fitCameraToObject } from '../tools/camera'
 
-export const Viewer = ({ id, environment, width = 512, height = 512, skybox, materials, hidden, showBehind }: ViewerProps) => {
+export const Viewer = ({
+  id,
+  environment,
+  width = 512,
+  height = 512,
+  skybox,
+  materials,
+  hidden,
+  showBehind,
+}: ViewerProps) => {
   const canvasStyle = { width, height, backgroundColor: 'red' }
 
   const controls = useRef<any>()
@@ -76,9 +85,7 @@ export const Viewer = ({ id, environment, width = 512, height = 512, skybox, mat
   return (
     <Canvas style={canvasStyle} camera={camera} shadows>
       <ambientLight />
-      <React.Suspense fallback={null}>
-        {productScene && <primitive object={productScene.scene} castShadow receiveShadow />}
-      </React.Suspense>
+      <React.Suspense fallback={null}>{productScene && <primitive object={productScene.scene} />}</React.Suspense>
       <Environment files={skybox} />
       <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
       <OrbitControls

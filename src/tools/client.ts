@@ -1,8 +1,8 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance } from 'axios'
 
-import { getConfiguration } from "../configuration";
+import { getConfiguration } from '../configuration'
 
 export const getClient = (): AxiosInstance =>
   axios.create({
     baseURL: getConfiguration().baseUrl,
-  });
+  })
