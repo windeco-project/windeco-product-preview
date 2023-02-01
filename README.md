@@ -7,13 +7,13 @@
 ## Installation
 
 ```sh
-$ npm i git@github.com:rabelium/windeco-product-preview.git -S
+$ npm i https://github.com/rabelium/windeco-product-preview.git -S
 ```
 
 or
 
 ```sh
-$ yarn add git@github.com:rabelium/windeco-product-preview.git
+$ yarn add https://github.com/rabelium/windeco-product-preview.git
 ```
 
 ## Usage
