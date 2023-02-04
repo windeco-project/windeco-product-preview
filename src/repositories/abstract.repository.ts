@@ -29,7 +29,7 @@ export class AbstractRepository<T, P extends object> {
     filter?: Record<string, string>,
     sort?: Record<string, 'desc' | 'asc'>,
   ): Promise<EntitiesList<T>> {
-    const params = this.encode(JSON.parse(JSON.stringify({ page, limit, filter, sort })))
+    const params = { p: this.encode(JSON.parse(JSON.stringify({ page, limit, filter, sort }))) }
     return this.client.get(this.base, { params }).then(({ data }) => data)
   }
 

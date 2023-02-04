@@ -22,8 +22,7 @@ class PreviewsRepositoryClass extends AbstractRepository<PreviewInterface, Previ
     environment?: boolean,
   ): string {
     const params = this.encode(JSON.parse(JSON.stringify({ m: materials, h: hidden, e: environment })))
-    console.log('json', JSON.stringify({ m: materials, h: hidden }).length)
-    console.log('params', params.length)
+
     const url = new URL(`${this.client.getUri()}/${this.base}/${id}/render`)
     url.searchParams.append('p', params)
     return url.toString()
