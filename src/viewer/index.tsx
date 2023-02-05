@@ -19,6 +19,7 @@ export const Viewer = ({
   materials,
   hidden,
   showBehind,
+  onAfterRender,
 }: ViewerProps) => {
   const canvasStyle = { width, height, backgroundColor: 'red' }
 
@@ -85,7 +86,9 @@ export const Viewer = ({
   return (
     <Canvas style={canvasStyle} camera={camera} shadows>
       <ambientLight />
-      <React.Suspense fallback={null}>{productScene && <primitive object={productScene.scene} />}</React.Suspense>
+      <React.Suspense fallback={null}>
+        {productScene && <primitive object={productScene.scene} onAfterRender={onAfterRender} />}
+      </React.Suspense>
       <Environment files={skybox} />
       <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
       <OrbitControls

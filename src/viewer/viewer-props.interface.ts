@@ -4,6 +4,7 @@ export interface ViewerProps {
   id: string
   width?: number
   height?: number
+  onAfterRender?: () => void
   skybox?: string
   hidden?: string[]
   environment?: boolean
