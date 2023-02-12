@@ -26,7 +26,8 @@ export class ModelMaterialConverter {
   applyAll(model: any, materials: Record<string, MaterialInterface>) {
     this.textures = model.textures
     this.images = model.images
-    this.extensionsUsed = model.extensionsUsed
+    this.extensionsUsed = model.extensionsUsed || []
+
     const gltfMaterials = model.materials.map((material: { name: string }) =>
       Object.keys(materials).includes(material.name)
         ? {
@@ -117,11 +118,10 @@ export class ModelMaterialConverter {
       })
     }
     let materialExtension
-    if (material.scale || material.rotation) {
+    if (material.scale !== undefined || material.rotation !== undefined) {
       const scale = get(material, 'scale', 1)
       const rotation = get(material, 'rotation', 0)
       const offset = [0, 0]
-      // KHR_texture_transform
       materialExtension = { offset, rotation, scale: [scale, scale] }
       this.extensionsUsed.push('KHR_texture_transform')
     }
@@ -177,7 +177,7 @@ export class ModelMaterialConverter {
         this.extensionsUsed.push('KHR_materials_specular')
       }
     }
-    console.log('gltfMaterial', gltfMaterial)
+
     return gltfMaterial
   }
 

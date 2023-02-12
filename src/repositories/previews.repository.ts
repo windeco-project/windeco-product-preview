@@ -15,6 +15,20 @@ class PreviewsRepositoryClass extends AbstractRepository<PreviewInterface, Previ
     return this.client.get(`${this.base}/${id}/details`).then(({ data }) => data)
   }
 
+  product(id: string, hide?: string[]): Promise<string> {
+    const params = {
+      hide: hide?.join(';'),
+    }
+    return this.client.get(`${this.base}/${id}`, { params }).then(({ data }) => data)
+  }
+
+  environment(id: string, hide?: string[]): Promise<string> {
+    const params = {
+      hide: hide?.join(';'),
+    }
+    return this.client.get(`${this.base}/${id}/environment`, { params }).then(({ data }) => data)
+  }
+
   getPreviewRender(
     id: string,
     materials?: Record<string, MaterialSetup>,

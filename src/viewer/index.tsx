@@ -1,106 +1,107 @@
-import { PerspectiveCamera } from 'three'
+import React, {
+  CSSProperties,
+  Dispatch,
+  forwardRef,
+  SetStateAction,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import Lottie from 'lottie-react'
 import { Canvas } from '@react-three/fiber'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrbitControls, Environment, Sky } from '@react-three/drei'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
-import type { ViewerProps } from './viewer-props.interface'
-import { MaterialsRepository } from '../repositories'
-import { getConfiguration } from '../configuration'
-import { ModelMaterialConverter } from '../tools'
-import { fitCameraToObject } from '../tools/camera'
+import LoadingAnimation from './loader.json'
+import { LoadModelFromApi } from './load-model'
+import { ViewerComponent } from './viewer-component'
+import { ViewerProps } from './viewer-props.interface'
+import { PerspectiveCamera } from 'three'
 
-export const Viewer = ({
-  id,
-  environment,
-  width = 512,
-  height = 512,
-  skybox,
-  materials,
-  hidden,
-  showBehind,
-  onAfterRender,
-}: ViewerProps) => {
-  const canvasStyle = { width, height, backgroundColor: 'red' }
+type ModelType = ['product' | 'environment', Dispatch<SetStateAction<GLTF | undefined>>][]
 
-  const controls = useRef<any>()
-  const settings = getConfiguration()
-  const [json, setJson] = useState<any>({})
-  const [camera] = useState<any>(new PerspectiveCamera())
-  const [productScene, setProductScene] = useState<GLTF>()
-  const [product, setProduct] = useState<GLTF>()
+export const Viewer = forwardRef(
+  (
+    { id, environment: withEnvironment, width = 512, height = 512, skybox, materials, hidden, showBehind }: ViewerProps,
+    ref,
+  ) => {
+    const canvas = useRef<any>()
+    const viewComponent = useRef<any>()
 
-  const productUrl = `${settings?.baseUrl}/previews/${id}?hide=${hidden?.join(';')}`
-  const url = `${settings?.baseUrl}/previews/${id}?environment=${!!environment}&hide=${hidden?.join(';')}`
+    const [product, setProduct] = useState<GLTF | undefined>()
+    const [environment, setEnviroment] = useState<GLTF | undefined>()
+    const [loading, setLoading] = useState<boolean>(true)
+    const [camera] = useState<any>(new PerspectiveCamera())
 
-  useEffect(() => {
-    if (productScene?.scene && product?.scene) {
-      fitCameraToObject(camera, product.scene, controls.current)
-    }
-  }, [productScene, product, camera])
+    const loadModel = useCallback(LoadModelFromApi, [id, hidden])
+    const styles = stylesBuilder(width, height, loading)
 
-  useMemo(
-    async () =>
-      fetch(url)
-        .then((response) => response.json())
-        .then((model) => {
-          setJson(model)
-        }),
-    [url],
-  )
-  useMemo(
-    () => json && new GLTFLoader().parse(JSON.stringify(json), `${settings?.baseUrl}`, (i: GLTF) => setProductScene(i)),
-    [json, settings],
-  )
-
-  useMemo(
-    async () =>
-      fetch(productUrl)
-        .then((response) => response.json())
-        .then((model) => {
-          new GLTFLoader().parse(JSON.stringify(model), `${settings?.baseUrl}`, (i: GLTF) => setProduct(i))
-        }),
-    [productUrl, settings],
-  )
-
-  useEffect(() => {
-    if (materials) {
-      const entries = Object.entries(materials).filter((entry) => entry[1].material !== undefined)
-      console.log('entries', entries)
-      if (entries.length) {
-        Promise.all(
-          entries.map(async ([key, { material, ...data }]) => [
-            key,
-            await MaterialsRepository.generate(`${material}`, data),
-          ]),
-        ).then((results) => {
-          const converter = new ModelMaterialConverter()
-          const model = converter.applyAll(json, Object.fromEntries(results))
-          console.log('model', model)
-          setJson(model)
-        })
+    useMemo(async () => {
+      setLoading(true)
+      const types: ModelType = [['product', setProduct]]
+      if (withEnvironment) {
+        types.push(['environment', setEnviroment])
       }
-    }
-  }, [materials])
+      Promise.all(types.map(([type, callback]) => loadModel(id, type, callback, hidden, materials))).finally(() =>
+        setLoading(false),
+      )
+    }, [hidden, id, loadModel, materials, withEnvironment])
 
-  return (
-    <Canvas style={canvasStyle} camera={camera} shadows>
-      <ambientLight />
-      <React.Suspense fallback={null}>
-        {productScene && <primitive object={productScene.scene} onAfterRender={onAfterRender} />}
-      </React.Suspense>
-      <Environment files={skybox} />
-      <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
-      <OrbitControls
-        ref={controls}
-        enabled={true}
-        minAzimuthAngle={showBehind ? -Infinity : -Math.PI / 4}
-        maxAzimuthAngle={showBehind ? Infinity : Math.PI / 4}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI - Math.PI / 3}
-        makeDefault
-      />
-      <axesHelper />
-    </Canvas>
-  )
-}
+    useImperativeHandle(ref, () => ({
+      screenshot() {
+        return new Promise((resolve) => {
+          canvas.current.toBlob(resolve)
+        })
+      },
+      resetView() {
+        viewComponent.current.resetView()
+      },
+    }))
+
+    return (
+      <div style={styles.container}>
+        <Canvas
+          ref={canvas}
+          style={styles.canvas}
+          camera={camera}
+          gl={{
+            antialias: true,
+            preserveDrawingBuffer: true,
+          }}
+          shadows
+        >
+          <ViewerComponent
+            ref={viewComponent}
+            camera={camera}
+            skybox={skybox}
+            product={product}
+            loading={loading}
+            showBehind={showBehind}
+            environment={withEnvironment ? environment : undefined}
+          />
+        </Canvas>
+        {loading && <Lottie animationData={LoadingAnimation} style={styles.loader} />}
+      </div>
+    )
+  },
+)
+
+Viewer.displayName = 'Viewer'
+
+const stylesBuilder = (width: number, height: number, loading: boolean): Record<string, CSSProperties> => ({
+  container: { position: 'relative', width, height, overflow: 'hidden' },
+  canvas: {
+    width,
+    height,
+    filter: loading ? 'grayscale(100%) blur(2px) brightness(0.67)' : undefined,
+  },
+  loader: {
+    position: 'absolute',
+    zIndex: 1,
+    left: '50%',
+    top: '50%',
+    translate: '-50% -50%',
+    width: Math.round(width / 2),
+  },
+})

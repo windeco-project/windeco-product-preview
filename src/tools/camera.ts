@@ -16,10 +16,13 @@ export const fitCameraToObject = (camera: PerspectiveCamera, object: Object3D, c
   const dy = size.z / 2 + Math.abs(size.y / 2 / Math.tan(fov / 2))
   const cameraZ = Math.max(dx, dy)
 
-  camera.position.set(0, center.y, center.z + cameraZ)
-  controls?.target.set(0, center.y, 0)
-  controls?.update()
+  const y = parseFloat(center.y.toFixed(3))
+  const z = parseFloat((center.z + cameraZ).toFixed(3))
+
+  camera.position.set(0, y, z)
   camera.updateProjectionMatrix()
+  controls?.target.set(0, y, 0)
+  controls?.update()
 
   return camera
 }

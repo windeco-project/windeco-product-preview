@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { Canvas } from '@react-three/fiber'
 import React, { useMemo, useState } from 'react'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -41,6 +42,8 @@ export const Material = ({ entity, fields }: MaterialProps) => {
     </Canvas>
   )
 }
+
+Material.displayName = 'Material'
 
 const canvasStyle = {
   width: '100%',
