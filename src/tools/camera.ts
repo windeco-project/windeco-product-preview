@@ -1,4 +1,4 @@
-import { OrbitControls } from 'three-stdlib'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { Box3, Object3D, PerspectiveCamera, Vector3 } from 'three'
 
 export const fitCameraToObject = (camera: PerspectiveCamera, object: Object3D, controls?: OrbitControls) => {

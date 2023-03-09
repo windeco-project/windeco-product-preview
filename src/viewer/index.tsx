@@ -1,4 +1,4 @@
-import React, {
+import {
   CSSProperties,
   Dispatch,
   forwardRef,
@@ -18,6 +18,7 @@ import { LoadModelFromApi } from './load-model'
 import { ViewerComponent } from './viewer-component'
 import { ViewerProps } from './viewer-props.interface'
 import { PerspectiveCamera } from 'three'
+import React from 'react'
 
 type ModelType = ['product' | 'environment', Dispatch<SetStateAction<GLTF | undefined>>][]
 
@@ -87,7 +88,7 @@ export const Viewer = forwardRef(
   },
 )
 
-Viewer.displayName = 'Viewer'
+Viewer.displayName = 'ModelViewer'
 
 const stylesBuilder = (width: number, height: number, loading: boolean): Record<string, CSSProperties> => ({
   container: { position: 'relative', width, height, overflow: 'hidden' },

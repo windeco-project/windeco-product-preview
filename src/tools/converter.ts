@@ -47,10 +47,8 @@ export class ModelMaterialConverter {
   }
 
   apply(model: object, material: MaterialInterface, fields?: Partial<MaterialInterface>) {
-    let merged = material
-    if (fields) {
-      merged = this.merge(material, fields)
-    }
+    let merged: Partial<MaterialInterface> = material
+    merged = this.merge(material, fields || {})
 
     return {
       ...model,
@@ -99,15 +97,19 @@ export class ModelMaterialConverter {
     return material
   }
 
-  private merge(material: MaterialInterface, fields: Partial<MaterialInterface>) {
+  private merge(material: MaterialInterface, fields: Partial<MaterialInterface>): Partial<MaterialInterface> {
     const data = Object.fromEntries(
-      Object.entries(fields).filter(([key, value]) => !MaterialTextures.includes(key) && value),
+      Object.entries(fields).filter(
+        ([key, value]) => value !== null && value !== undefined && !MaterialTextures.includes(key),
+      ),
     )
 
-    return { ...material, ...data }
+    return Object.fromEntries(
+      Object.entries({ ...material, ...data }).filter(([_, value]) => value !== null && value !== undefined),
+    )
   }
 
-  createGLTFMaterial(material: MaterialInterface): GLTFMaterial {
+  createGLTFMaterial(material: Partial<MaterialInterface>): GLTFMaterial {
     const gltfMaterial: GLTFMaterial = {}
     if (material.extensions) {
       gltfMaterial.extensions = material.extensions
@@ -142,7 +144,7 @@ export class ModelMaterialConverter {
       baseColorFactor: material.color
         ? [
             ...ColorUtils.hexToFactor<vec3>(Number(`0x${material.color.replace('#', '')}`), defaultColor),
-            material.opacity,
+            material.opacity || 1,
           ]
         : undefined,
       baseColorTexture: this.createTexture(material.diffuse_texture, materialExtension),

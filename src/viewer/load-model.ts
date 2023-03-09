@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { MaterialSetup } from '../material/types'
@@ -9,7 +8,7 @@ import { ModelMaterialConverter } from '../tools'
 export const LoadModelFromApi = (
   id: string,
   type: 'product' | 'environment',
-  callback: Dispatch<SetStateAction<GLTF | undefined>>,
+  callback: (object: GLTF) => void,
   hidden?: string[],
   materials?: Record<string, MaterialSetup>,
 ) => {

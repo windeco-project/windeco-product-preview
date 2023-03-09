@@ -1,3 +1,4 @@
+import { MaterialSetup } from '../../material/types'
 import type { GlTFProperty } from '../../material/types/gltf-material.interface'
 import { AlphaMode } from '../enums'
 
@@ -22,4 +23,5 @@ export interface MaterialInterface extends GlTFProperty {
   emission_texture?: string
   sheen_texture?: string
   specular_texture?: string
+  variations?: Record<string, MaterialSetup>
 }

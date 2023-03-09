@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 import { Canvas } from '@react-three/fiber'
 import React, { useMemo, useState } from 'react'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -26,6 +25,7 @@ export const Material = ({ entity, fields }: MaterialProps) => {
 
   object?.scene.traverse((o: any) => {
     if (fields && o.isMesh) {
+      console.log('fields', o.material)
       o.material = converter.applyTextures(o.material, fields)
       console.log('o.material', o.material)
     }
@@ -43,7 +43,7 @@ export const Material = ({ entity, fields }: MaterialProps) => {
   )
 }
 
-Material.displayName = 'Material'
+Material.displayName = 'MaterialViewer'
 
 const canvasStyle = {
   width: '100%',

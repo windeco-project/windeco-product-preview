@@ -1,12 +1,12 @@
-/* eslint-disable react/no-unknown-property */
-import React, { Suspense, useCallback, useImperativeHandle, useLayoutEffect, useRef } from 'react'
+import { forwardRef, Suspense, useCallback, useImperativeHandle, useLayoutEffect, useRef } from 'react'
 import { Object3D } from 'three'
 import { Environment, OrbitControls, Sky } from '@react-three/drei'
 
 import { ViewerComponentProps } from './viewer-component-props.interface'
 import { fitCameraToObject } from '../tools/camera'
+import React from 'react'
 
-export const ViewerComponent = React.forwardRef(
+export const ViewerComponent = forwardRef(
   ({ loading, product, camera, environment, skybox, showBehind }: ViewerComponentProps, ref) => {
     const isLoading = loading || !product
 
@@ -56,5 +56,3 @@ export const ViewerComponent = React.forwardRef(
     )
   },
 )
-
-ViewerComponent.displayName = 'ViewerComponent'

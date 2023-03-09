@@ -1,6 +1,7 @@
 export interface MaterialSetup {
   material?: string
   color?: string
-  background?: string
+  ral?: string
+  opacity?: string
   tile?: string
 }
