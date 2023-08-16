@@ -6,6 +6,7 @@ import { ViewerComponentProps } from './viewer-component-props.interface'
 import { fitCameraToObject } from '../tools/camera'
 import React from 'react'
 
+// eslint-disable-next-line react/display-name
 export const ViewerComponent = forwardRef(
   ({ loading, product, camera, environment, skybox, showBehind }: ViewerComponentProps, ref) => {
     const isLoading = loading || !product
@@ -38,7 +39,9 @@ export const ViewerComponent = forwardRef(
       <>
         <ambientLight />
         <Suspense fallback={null}>
+          {/* eslint-disable-next-line react/no-unknown-property */}
           {!isLoading && product && <primitive object={product.scene} renderOrder={1} receiveShadow />}
+          {/* eslint-disable-next-line react/no-unknown-property */}
           {!isLoading && environment && <primitive object={environment.scene} renderOrder={2} receiveShadow />}
           <Environment files={skybox} background />
         </Suspense>

@@ -34,6 +34,7 @@ export const Material = ({ entity, fields }: MaterialProps) => {
   return (
     <Canvas style={canvasStyle} camera={{ position: [-1.5, 0, 0], fov: 30 }}>
       <React.Suspense fallback={null}>
+        {/* eslint-disable-next-line react/no-unknown-property */}
         {object && <primitive object={object.scene} />}
         <Environment preset='city' />
       </React.Suspense>
